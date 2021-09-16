@@ -149,7 +149,7 @@ public class SwiftSpinner: UIView {
     ///   - animated: Animate the spinner. Defaults to true
     /// - Returns: The instance of the spinner
     @discardableResult
-    public class func show(_ title: String, animated: Bool = true) -> SwiftSpinner {
+    public class func show(_ title: NSAttributedString, animated: Bool = true) -> SwiftSpinner {
         let spinner = SwiftSpinner.shared
 
         spinner.clearTapHandler()
@@ -203,7 +203,7 @@ public class SwiftSpinner: UIView {
     ///   - completion: An optional completion handler
     /// - Returns: The instance of the spinner
     @discardableResult
-    public class func show(duration: Double, title: String, animated: Bool = true, completion: (() -> ())? = nil) -> SwiftSpinner {
+    public class func show(duration: Double, title: NSAttributedString, animated: Bool = true, completion: (() -> ())? = nil) -> SwiftSpinner {
         let spinner = SwiftSpinner.show(title, animated: animated)
         spinner.delay(duration) {
             SwiftSpinner.hide {
@@ -221,7 +221,7 @@ public class SwiftSpinner: UIView {
     ///   - delay: The delay time
     ///   - title: The title shown under the spinner
     ///   - animated: Animate the spinner. Defaults to true
-    public class func show(delay: Double, title: String, animated: Bool = true) {
+    public class func show(delay: Double, title: NSAttributedString, animated: Bool = true) {
         let token = UUID().uuidString
         delayedTokens.append(token)
         SwiftSpinner.shared.delay(delay, completion: {
@@ -239,7 +239,7 @@ public class SwiftSpinner: UIView {
     ///   - title: The title shown under the spinner
     /// - Returns: The instance of the spinner
     @discardableResult
-    public class func show(progress: Double, title: String) -> SwiftSpinner {
+    public class func show(progress: Double, title: NSAttributedString) -> SwiftSpinner {
         let spinner = SwiftSpinner.show(title, animated: false)
         spinner.outerCircle.strokeEnd = CGFloat(progress)
         return spinner
@@ -305,14 +305,14 @@ public class SwiftSpinner: UIView {
     }
 
     /// The spinner title
-    public var title: String = "" {
+    public var title: NSAttributedString = NSAttributedString(string: "") {
         didSet {
             let spinner = SwiftSpinner.shared
 
             guard spinner.animating else {
                 spinner.titleLabel.transform = CGAffineTransform.identity
                 spinner.titleLabel.alpha = 1.0
-                spinner.titleLabel.text = self.title
+                spinner.titleLabel.attributedText = self.title
                 return
             }
 
@@ -320,7 +320,7 @@ public class SwiftSpinner: UIView {
                 spinner.titleLabel.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
                 spinner.titleLabel.alpha = 0.2
                 }, completion: { _ in
-                    spinner.titleLabel.text = self.title
+                    spinner.titleLabel.attributedText = self.title
                     UIView.animate(withDuration: 0.35, delay: 0.0, usingSpringWithDamping: 0.35, initialSpringVelocity: 0.0, options: [], animations: {
                         spinner.titleLabel.transform = CGAffineTransform.identity
                         spinner.titleLabel.alpha = 1.0

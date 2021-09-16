@@ -62,7 +62,8 @@
 				D20C83041C77C2B7002CA000 /* SwiftSpinner.swift */,
 				D20C830C1C77C49D002CA000 /* Supporting Files */,
 			);
-			path = SwiftSpinner;
+			name = SwiftSpinner;
+			path = Sources/SwiftSpinner;
 			sourceTree = "<group>";
 		};
 		D20C830C1C77C49D002CA000 /* Supporting Files */ = {
@@ -73,7 +74,7 @@
 				D20C82FE1C77C1F2002CA000 /* Info.plist */,
 			);
 			name = "Supporting Files";
-			path = SwiftSpinner;
+			path = Sources/SwiftSpinner;
 			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
@@ -332,7 +333,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SwiftSpinner/Info.plist;
+				INFOPLIST_FILE = Sources/SwiftSpinner/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.underplot.SwiftSpinner;
@@ -352,7 +353,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SwiftSpinner/Info.plist;
+				INFOPLIST_FILE = Sources/SwiftSpinner/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.underplot.SwiftSpinner;
