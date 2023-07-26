@@ -12,13 +12,6 @@ import UIKit
 public class SwiftSpinner: UIView {
     fileprivate static let standardAnimationDuration = 0.33
 
-   // MARK: - Singleton
-
-    //
-    // Access the singleton instance
-    //
-    public static let shared = SwiftSpinner(frame: CGRect.zero)
-
     // MARK: - Init
 
     /// Init
@@ -121,8 +114,8 @@ public class SwiftSpinner: UIView {
     }
 
     /// Custom superview for the spinner
-    private static weak var customSuperview: UIView?
-    private static func containerView() -> UIView? {
+    private weak var customSuperview: UIView?
+    private func containerView() -> UIView? {
         #if EXTENSION
             return customSuperview
         #else
@@ -135,7 +128,7 @@ public class SwiftSpinner: UIView {
     }
 
     /// Custom container for the spinner
-    public class func useContainerView(_ sv: UIView?) {
+    public func useContainerView(_ sv: UIView?) {
         customSuperview = sv
     }
 
@@ -149,9 +142,7 @@ public class SwiftSpinner: UIView {
     ///   - animated: Animate the spinner. Defaults to true
     /// - Returns: The instance of the spinner
     @discardableResult
-    public class func show(_ title: NSAttributedString, animated: Bool = true) -> SwiftSpinner {
-        let spinner = SwiftSpinner.shared
-
+    public class func show(_ title: NSAttributedString, spinner: SwiftSpinner = SwiftSpinner(), animated: Bool = true) -> SwiftSpinner {
         spinner.clearTapHandler()
 
         spinner.updateFrame()
@@ -160,7 +151,7 @@ public class SwiftSpinner: UIView {
             // Show the spinner
             spinner.blurView.contentView.alpha = 0
 
-            guard let containerView = containerView() else {
+            guard let containerView = spinner.containerView() else {
                 #if EXTENSION
                     fatalError("\n`containerView` is `nil`. `UIApplication.keyWindow` is not available in extensions and so, a containerView is required. Use `useContainerView` to set a view where the spinner should show")
                 #else
@@ -206,7 +197,7 @@ public class SwiftSpinner: UIView {
     public class func show(duration: Double, title: NSAttributedString, animated: Bool = true, completion: (() -> ())? = nil) -> SwiftSpinner {
         let spinner = SwiftSpinner.show(title, animated: animated)
         spinner.delay(duration) {
-            SwiftSpinner.hide {
+            SwiftSpinner.hide(spinner: spinner) {
                 completion?()
             }
         }
@@ -223,11 +214,12 @@ public class SwiftSpinner: UIView {
     ///   - animated: Animate the spinner. Defaults to true
     public class func show(delay: Double, title: NSAttributedString, animated: Bool = true) {
         let token = UUID().uuidString
+        let spinner = SwiftSpinner()
         delayedTokens.append(token)
-        SwiftSpinner.shared.delay(delay, completion: {
+        spinner.delay(delay, completion: {
             if let index = delayedTokens.firstIndex(of: token) {
                 delayedTokens.remove(at: index)
-                SwiftSpinner.show(title, animated: animated)
+                SwiftSpinner.show(title, spinner: spinner, animated: animated)
             }
         })
     }
@@ -251,9 +243,7 @@ public class SwiftSpinner: UIView {
     /// Hide the spinner
     ///
     /// - Parameter completion: A closure called upon completion
-    public class func hide(_ completion: (() -> Void)? = nil) {
-        let spinner = SwiftSpinner.shared
-
+    public class func hide(spinner: SwiftSpinner, _ completion: (() -> Void)? = nil) {
         spinner.dismissing = true
 
         NotificationCenter.default.removeObserver(spinner)
@@ -288,42 +278,36 @@ public class SwiftSpinner: UIView {
     /// Set the default title font
     ///
     /// - Parameter font: The title font
-    public class func setTitleFont(_ font: UIFont?) {
-        let spinner = SwiftSpinner.shared
-
-        spinner.currentTitleFont = font ?? spinner.defaultTitleFont
-        spinner.titleLabel.font = font ?? spinner.defaultTitleFont
+    public func setTitleFont(_ font: UIFont?) {
+        currentTitleFont = font ?? defaultTitleFont
+        titleLabel.font = font ?? defaultTitleFont
     }
 
     /// Set the default title color
     ///
     /// - Parameter color: The title color
-    public class func setTitleColor(_ color: UIColor?) {
-        let spinner = SwiftSpinner.shared
-
-        spinner.titleLabel.textColor = color ?? spinner.defaultTitleColor
+    public func setTitleColor(_ color: UIColor?) {
+        titleLabel.textColor = color ?? defaultTitleColor
     }
 
     /// The spinner title
     public var title: NSAttributedString = NSAttributedString(string: "") {
         didSet {
-            let spinner = SwiftSpinner.shared
-
-            guard spinner.animating else {
-                spinner.titleLabel.transform = CGAffineTransform.identity
-                spinner.titleLabel.alpha = 1.0
-                spinner.titleLabel.attributedText = self.title
+            guard self.animating else {
+                self.titleLabel.transform = CGAffineTransform.identity
+                self.titleLabel.alpha = 1.0
+                self.titleLabel.attributedText = self.title
                 return
             }
 
             UIView.animate(withDuration: 0.15, delay: 0.0, options: .curveEaseOut, animations: {
-                spinner.titleLabel.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-                spinner.titleLabel.alpha = 0.2
+                self.titleLabel.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+                self.titleLabel.alpha = 0.2
                 }, completion: { _ in
-                    spinner.titleLabel.attributedText = self.title
+                    self.titleLabel.attributedText = self.title
                     UIView.animate(withDuration: 0.35, delay: 0.0, usingSpringWithDamping: 0.35, initialSpringVelocity: 0.0, options: [], animations: {
-                        spinner.titleLabel.transform = CGAffineTransform.identity
-                        spinner.titleLabel.alpha = 1.0
+                        self.titleLabel.transform = CGAffineTransform.identity
+                        self.titleLabel.alpha = 1.0
                         }, completion: nil)
             })
         }
@@ -486,15 +470,15 @@ public class SwiftSpinner: UIView {
     }
     
     @objc func orientationChangedAction() {
-        if let _ = SwiftSpinner.containerView() {
-            SwiftSpinner.shared.setNeedsLayout()
+        if let _ = containerView() {
+            self.setNeedsLayout()
         }
     }
     
     public func updateFrame() {
-        if let containerView = SwiftSpinner.containerView() {
-            SwiftSpinner.shared.frame = containerView.bounds
-            containerView.bringSubviewToFront(SwiftSpinner.shared)
+        if let containerView = containerView() {
+            self.frame = containerView.bounds
+            containerView.bringSubviewToFront(self)
         }
     }
 
