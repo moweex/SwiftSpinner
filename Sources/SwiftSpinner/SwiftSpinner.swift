@@ -176,31 +176,12 @@ public class SwiftSpinner: UIView {
             #endif
         } else if spinner.dismissing {
             // If the spinner is hiding, delay the next show. The duration is set to double the standard animation to avoid an edge case that caused endless laoding. See #125
-            show(delay: SwiftSpinner.standardAnimationDuration, title: title, animated: true)
+            show(delay: SwiftSpinner.standardAnimationDuration, spinner: spinner, title: title, animated: true)
         }
 
         spinner.title = title
         spinner.animating = animated
 
-        return spinner
-    }
-
-    /// Show the spinner activity on screen with duration, if visible only update the title
-    ///
-    /// - Parameters:
-    ///   - duration: The duration of the show animation
-    ///   - title: The title shown under the spinner
-    ///   - animated: Animate the spinner. Defaults to true
-    ///   - completion: An optional completion handler
-    /// - Returns: The instance of the spinner
-    @discardableResult
-    public class func show(duration: Double, title: NSAttributedString, animated: Bool = true, completion: (() -> ())? = nil) -> SwiftSpinner {
-        let spinner = SwiftSpinner.show(title, animated: animated)
-        spinner.delay(duration) {
-            SwiftSpinner.hide(spinner: spinner) {
-                completion?()
-            }
-        }
         return spinner
     }
 
@@ -212,9 +193,8 @@ public class SwiftSpinner: UIView {
     ///   - delay: The delay time
     ///   - title: The title shown under the spinner
     ///   - animated: Animate the spinner. Defaults to true
-    public class func show(delay: Double, title: NSAttributedString, animated: Bool = true) {
+    public class func show(delay: Double, spinner: SwiftSpinner, title: NSAttributedString, animated: Bool = true) {
         let token = UUID().uuidString
-        let spinner = SwiftSpinner()
         delayedTokens.append(token)
         spinner.delay(delay, completion: {
             if let index = delayedTokens.firstIndex(of: token) {
